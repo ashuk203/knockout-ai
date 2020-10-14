@@ -18,7 +18,7 @@ class Knockout(object):
     def __init__(self, num_penguins, animate=False):
         self._animate = animate
         # self._animate = False
-        
+
         self._num_penguins = num_penguins
 
         self._init_space()
@@ -56,8 +56,8 @@ class Knockout(object):
             body = pymunk.Body(mass, inertia)
 
             y = [lower_spawn_pos, upper_spawn_pos][i % 2]
-            x = lower_spawn_pos + (center / (self._num_penguins - 1)) * (i // 2)
-            # x = random.randint(lower_spawn_pos, upper_spawn_pos)
+            # x = lower_spawn_pos + (center / (self._num_penguins - 1)) * (i // 2)
+            x = random.randint(lower_spawn_pos, upper_spawn_pos)
 
             body.position = x, y
             body.velocity = collision_point - body.position
@@ -94,7 +94,7 @@ class Knockout(object):
                 self._clear_screen()
                 self._draw_objects()
                 pygame.display.flip()
-                pygame.display.set_caption("dt: " + str(self._dt))
+                pygame.display.set_caption("Press 'r' to restart demo and esc to quit")
             elif self._check_stopped():
                 self._running = False
 

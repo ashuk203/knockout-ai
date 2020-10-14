@@ -3,8 +3,11 @@ from game import Knockout
 import timeit
 import numpy as np
 
-# Note: uncomment
-# 'self._animate = False' (line 20)
+# Note: uncomment lines
+#
+# 'self._animate = False'
+# 'x = lower_spawn_pos + (center / (self._num_penguins - 1)) * (i // 2)'
+#
 # in game.py before running experiment
 if __name__ == '__main__':
     game = Knockout(4, True)
