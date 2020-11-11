@@ -15,11 +15,11 @@ class Knockout(object):
         self._space = pymunk.Space()
         self._space.damping = 0.5
 
-    def __init__(self, num_penguins, animate=False):
+    def __init__(self, player1, player2, animate=False):
         self._animate = animate
         # self._animate = False
 
-        self._num_penguins = num_penguins
+        #self._num_penguins = num_penguins
 
         self._init_space()
         self._dt = [0.2, 0.05][animate]
@@ -27,8 +27,10 @@ class Knockout(object):
 
         self._board_dim = 400
         self._penguins = []
-        self._generate_random_layout()
-
+        self.p1 = []
+        self.p2 = []
+        #self._generate_random_layout()
+        self._setUp(player1, player2)
         self._running = True
 
         # pygame
@@ -43,6 +45,35 @@ class Knockout(object):
     def get_positions(self):
         return list(map(lambda s : list(s.body.position), self._penguins))
 
+
+    def _setUp(self, player1, player2):
+        for p,v in player1.toArray():
+            mass = 15
+            radius = 15
+            inertia = pymunk.moment_for_circle(mass, 0, radius, (0, 0))
+            body = pymunk.Body(mass, inertia)
+            body.position = p
+            body.velocity = v
+            shape = pymunk.Circle(body, radius, (0, 0))
+            shape.elasticity = 0.95
+            shape.friction = 1
+            self._space.add(body, shape)
+            self._penguins.append(shape)
+            self.p1.append(body)
+        for p, v in player2.toArray():
+            mass = 15
+            radius = 15
+            inertia = pymunk.moment_for_circle(mass, 0, radius, (0, 0))
+            body = pymunk.Body(mass, inertia)
+            body.position = p
+            body.velocity = v
+            shape = pymunk.Circle(body, radius, (0, 0))
+            shape.elasticity = 0.95
+            shape.friction = 1
+            self._space.add(body, shape)
+            self._penguins.append(shape)
+            self.p2.append(body)
+
     def _generate_random_layout(self):
         for i in range(2 * self._num_penguins):
             mass = 15
@@ -51,6 +82,7 @@ class Knockout(object):
             upper_spawn_pos = 0.75 * self._board_dim
             center = 0.5 * self._board_dim
             collision_point = Vec2d(center, center)
+
 
             inertia = pymunk.moment_for_circle(mass, 0, radius, (0, 0))
             body = pymunk.Body(mass, inertia)
@@ -95,8 +127,19 @@ class Knockout(object):
                 self._draw_objects()
                 pygame.display.flip()
                 pygame.display.set_caption("Press 'r' to restart demo and esc to quit")
-            elif self._check_stopped():
+            if self._check_stopped():
                 self._running = False
+        p1 = Player()
+        for p in self.p1:
+            p1.ps.append(p.position)
+            p1.vs.append((0,0))
+        self.check_alive(p1)
+        p2 = Player()
+        for p in self.p2:
+            p2.ps.append(p.position)
+            p2.vs.append((0, 0))
+        self.check_alive(p2)
+        return p1,p2
 
     def save_pic(self):
         pygame.image.save(self._screen, "bouncing_balls " + str(self._image_idx) + ".png")
@@ -111,7 +154,34 @@ class Knockout(object):
     def _draw_objects(self):
         self._space.debug_draw(self._draw_options)
 
+    def check_alive(self, player):
+        for p in player.ps:
+            if not (0 < p[0] < self._board_dim) or not (0 < p[1] < self._board_dim):
+                p[0] = -1000
+                p[1] = -1000
+
+
+class Player():
+    def __init__(self):
+        self.ps = []
+        self.vs = []
+
+    def toArray(self):
+        return zip(self.ps, self.vs)
+
+
+def step(p1, p2):
+    game = Knockout(p1, p2, False)
+    return game.run()
 
 if __name__ == '__main__':
-    game = Knockout(4, True)
-    game.run()
+    p1 = Player()
+    p1.ps.append((50,50))
+    p1.vs.append((1000,1000))
+    p2 = Player()
+    p2.ps.append((100, 100))
+    p2.vs.append((-100, -100))
+    p1, p2 = step(p1, p2)
+    for p, v in p2.toArray():
+        print(p, v)
+
