@@ -169,6 +169,12 @@ class Player():
     def toArray(self):
         return zip(self.ps, self.vs)
 
+    def copy(self):
+        n = Player()
+        n.ps = self.ps.copy()
+        n.vs = self.vs.copy()
+        return n
+
 
 def step(p1, p2):
     game = Knockout(p1, p2, False)
@@ -177,7 +183,7 @@ def step(p1, p2):
 if __name__ == '__main__':
     p1 = Player()
     p1.ps.append((50,50))
-    p1.vs.append((1000,1000))
+    p1.vs.append((100,100))
     p2 = Player()
     p2.ps.append((100, 100))
     p2.vs.append((-100, -100))
