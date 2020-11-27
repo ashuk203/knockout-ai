@@ -176,8 +176,8 @@ class Player():
         return n
 
 
-def step(p1, p2):
-    game = Knockout(p1, p2, False)
+def step(p1, p2, show=False):
+    game = Knockout(p1, p2, show)
     return game.run()
 
 if __name__ == '__main__':
